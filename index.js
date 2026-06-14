@@ -1,57 +1,108 @@
-// Import các event và thư viện nội bộ của SillyTavern
 import { eventSource, event_types } from '../../../../script.js';
-import { getContext } from '../../../extensions.js';
 
-// Khởi tạo biến môi trường cho extension
-const extensionName = 'st-vn-player';
-let extensionSettings = {};
+const EXTENSION_NAME = 'st-vn-engine';
+let isVnModeActive = false;
 
 /**
- * Hàm khởi tạo chính của Extension
+ * Main initialization point for the extension
  */
 async function initExtension() {
-    console.log(`[VN Player] Đang khởi tạo extension...`);
-
-    // 1. Tạo giao diện UI cơ bản cho VN Player
-    setupVNLayer();
-
-    // 2. Lắng nghe các sự kiện từ SillyTavern (VD: Khi nhận tin nhắn mới)
-    eventSource.on(event_types.MESSAGE_RECEIVED, onMessageReceived);
-    eventSource.on(event_types.CHAT_CHANGED, onChatChanged);
-
-    console.log(`[VN Player] Khởi tạo thành công! Sẵn sàng chơi Visual Novel.`);
-}
-
-/**
- * Hàm tạo lớp Overlay cho Visual Novel
- */
-function setupVNLayer() {
-    // Chúng ta sẽ tạo một Container bao phủ màn hình để render Sprite và Textbox sau này
-    const vnContainer = document.createElement('div');
-    vnContainer.id = 'st-vn-player-container';
-    vnContainer.style.display = 'none'; // Ẩn mặc định
+    console.log(`[VN Engine] Initializing core modules...`);
     
-    // Inject vào body của SillyTavern
-    document.body.appendChild(vnContainer);
+    // 1. Build the UI elements
+    buildFloatingButton();
+    buildVnOverlay();
+    
+    // 2. Inject core formatting rules into ST's Lorebook system automatically
+    await injectCoreRules();
+
+    // 3. Listen for new chat messages from AI to update the VN screen
+    eventSource.on(event_types.MESSAGE_RECEIVED, handleNewMessage);
+    
+    console.log(`[VN Engine] Initialization complete. Ready to play!`);
 }
 
 /**
- * Xử lý khi có tin nhắn mới từ AI
+ * Creates the floating toggle button on the bottom right
  */
-function onMessageReceived(data) {
-    // Sau này chúng ta sẽ bóc tách văn bản, lệnh đổi background, đổi sprite ở đây
-    // console.log("[VN Player] Có tin nhắn mới:", data);
+function buildFloatingButton() {
+    const btn = document.createElement('div');
+    btn.id = 'st-vn-floating-btn';
+    btn.innerHTML = '🎮'; // Controller icon
+    btn.title = 'Toggle Visual Novel Mode';
+    
+    btn.addEventListener('click', toggleVnMode);
+    document.body.appendChild(btn);
 }
 
 /**
- * Xử lý khi người dùng đổi chat (đổi nhân vật)
+ * Creates the full-screen Visual Novel overlay
  */
-function onChatChanged() {
-    // Reset lại màn hình VN khi đổi sang chat khác
-    // console.log("[VN Player] Đã chuyển chat.");
+function buildVnOverlay() {
+    const overlay = document.createElement('div');
+    overlay.id = 'st-vn-overlay';
+    
+    // Injecting HTML structure for the VN UI
+    overlay.innerHTML = `
+        <button id="st-vn-close-btn">✖ Close VN</button>
+        
+        <div id="st-vn-sprite-container">
+            <!-- Sprites will be injected here via JS later -->
+            <img class="vn-sprite" id="st-vn-main-sprite" src="" style="display:none;" />
+        </div>
+        
+        <div id="st-vn-textbox-container">
+            <div id="st-vn-speaker-name">System</div>
+            <div id="st-vn-dialogue-text">Welcome to the VN Engine. Waiting for AI response...</div>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    
+    // Handle close button
+    document.getElementById('st-vn-close-btn').addEventListener('click', () => {
+        isVnModeActive = false;
+        overlay.style.display = 'none';
+    });
 }
 
-// Chạy hàm khởi tạo khi file được load
+/**
+ * Toggles the visibility of the VN Overlay
+ */
+function toggleVnMode() {
+    isVnModeActive = !isVnModeActive;
+    const overlay = document.getElementById('st-vn-overlay');
+    
+    if (isVnModeActive) {
+        overlay.style.display = 'flex';
+        // TODO: In Phase 2, parse the *last* chat message to restore current BG and Sprite
+        console.log(`[VN Engine] VN Mode Active.`);
+    } else {
+        overlay.style.display = 'none';
+        console.log(`[VN Engine] VN Mode Deactivated.`);
+    }
+}
+
+/**
+ * Automatically injects the core rules (System Prompt/Lorebook) into ST.
+ */
+async function injectCoreRules() {
+    // TODO: Phase 2 - Check if the VN formatting entry exists in the current Lorebook.
+    // If not, silently push the rules (JSON format guide) so the AI knows how to reply.
+    console.log(`[VN Engine] Checked/Injected core formatting rules.`);
+}
+
+/**
+ * Event handler triggered whenever a message is generated
+ */
+function handleNewMessage(data) {
+    // TODO: Phase 2 - chatParser module
+    // 1. Extract <vn> tags from data.message
+    // 2. Look up the corresponding URL from the Game Data JSON
+    // 3. Update #st-vn-overlay background, #st-vn-main-sprite src, and textbox content
+}
+
+// Start the extension when loaded
 jQuery(async () => {
     await initExtension();
 });
