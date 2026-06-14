@@ -1,9 +1,9 @@
 {
-  "display_name": "SillyTavern Visual Novel Extension",
-  "name": "st-vn-user",
+  "display_name": "Visual Novel Engine",
+  "name": "st-vn-engine",
   "version": "1.0.0",
   "author": "burumoon",
-  "description": "Một extension đơn giản, dễ hiểu cho người dùng để chơi visual novel, một dự án khá tuỳ hứng.",
+  "description": "Transforms SillyTavern into a fully functional Visual Novel with backgrounds, sprites, choices, and RPG elements.",
   "readme": "README.md",
   "assets": [
     "index.js",
