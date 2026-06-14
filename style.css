@@ -1,25 +1,125 @@
-/* Container chính của VN Player */
-#st-vn-player-container {
+/* =========================================
+   1. FLOATING BUTTON
+   ========================================= */
+#st-vn-floating-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: #ff6b81; /* VN aesthetic pink, can be customized */
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 8000;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    color: white;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#st-vn-floating-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+}
+
+/* =========================================
+   2. MAIN VN OVERLAY
+   ========================================= */
+#st-vn-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 9999; /* Z-index rất cao để đè lên UI của ST */
-    background-color: transparent; /* Mặc định trong suốt */
-    pointer-events: none; /* Không chặn click chuột vào ST mặc định khi đang ẩn */
-    
-    /* Layout cơ bản */
-    display: flex;
+    background-color: #1a1a1a; /* Default black background */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 9999;
+    display: none; /* Hidden by default */
     flex-direction: column;
-    justify-content: flex-end; /* Đẩy Textbox xuống dưới cùng */
+    justify-content: flex-end;
     align-items: center;
+    transition: opacity 0.3s ease; /* Fade-in effect */
 }
 
-/* 
-  Sau này chúng ta sẽ thêm:
-  - .vn-textbox (Hộp thoại)
-  - .vn-character-sprite (Nhân vật)
-  - .vn-background (Ảnh nền)
-  - .vn-choice-menu (Menu lựa chọn)
-*/
+/* Close Button */
+#st-vn-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 10001;
+    font-family: inherit;
+    font-weight: bold;
+    backdrop-filter: blur(4px);
+    transition: background 0.2s ease;
+}
+
+#st-vn-close-btn:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* =========================================
+   3. SPRITE LAYER
+   ========================================= */
+#st-vn-sprite-container {
+    position: absolute;
+    bottom: 0; 
+    height: 85vh; /* Keep character from reaching very top */
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    pointer-events: none; /* Let clicks pass through to map/buttons later */
+}
+
+.vn-sprite {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0px 0px 15px rgba(0,0,0,0.5)); /* Adds depth to character */
+}
+
+/* =========================================
+   4. TEXTBOX (GLASSMORPHISM)
+   ========================================= */
+#st-vn-textbox-container {
+    width: 85%;
+    max-width: 1200px;
+    background: rgba(10, 10, 15, 0.75); /* Dark semi-transparent */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
+    margin-bottom: 30px;
+    padding: 25px 30px;
+    color: white;
+    z-index: 10000; /* Above sprites */
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px); /* Modern frosted glass effect */
+}
+
+#st-vn-speaker-name {
+    font-size: 1.6em;
+    font-weight: 800;
+    color: #ff9ff3; /* Aesthetic highlight color for names */
+    margin-bottom: 12px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    letter-spacing: 1px;
+}
+
+#st-vn-dialogue-text {
+    font-size: 1.3em;
+    line-height: 1.6;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
